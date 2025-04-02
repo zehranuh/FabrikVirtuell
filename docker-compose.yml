@@ -1,14 +1,13 @@
 services:
   db:
-    image: postgres:latest
+    image: mysql:latest
     environment:
-      POSTGRES_USER: c
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: mydatabase
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: my_database
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "3306:3306"
 
   api:
     image: my-api-image:latest
