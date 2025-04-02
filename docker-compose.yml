@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: c
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: mydatabase
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    image: my-api-image:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  web:
+    image: my-web-app:latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - api
+
+volumes:
+  db-data:

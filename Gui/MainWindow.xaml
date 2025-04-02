@@ -1,0 +1,64 @@
+﻿<Window x:Class="Businesslogic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Businesslogic"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="20">
+            <Label Content="Maschinenstatus:" FontSize="18" FontWeight="Bold"  />
+            <Label Name="StatusLabel" Content="Status" FontSize="16" Margin="0,0,0,20" />
+
+            <Label Content="Signalleuchte:" FontSize="18" FontWeight="Bold"  />
+            <Ellipse Name="SignalLightEllipse" Width="60" Height="60" Fill="Gray" Margin="0,0,0,20"/>
+
+            <Button Name="StartButton" Content="Start" Click="StartButton_Click" Width="160" Height="45" Margin="10" Background="#4CAF50" Foreground="White" FontSize="16"/>
+            <Button Name="StopButton" Content="Stop" Click="StopButton_Click" Width="160" Height="45" Margin="20" Background="#F44336" Foreground="White" FontSize="16"/>
+
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBlock Text="Jobname:" VerticalAlignment="Center" Margin="5"   FontSize="16"/>
+                <TextBox Name="JobNameTextBox" Width="220" Margin="5"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBlock Text="Stückzahl:" VerticalAlignment="Center" Margin="5"   FontSize="16"/>
+                <TextBox Name="QuantityTextBox" Width="220" Margin="4"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBlock Text="Produkt:" VerticalAlignment="Center" Margin="5"   FontSize="16"/>
+                <ComboBox Name="JobTypeComboBox" Width="220">
+                    <ComboBoxItem Content="1 - Auto "/>
+                    <ComboBoxItem Content="2 - Kabel "/>
+                    <ComboBoxItem Content="3 - Metallstück "/>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="20">
+            <Button Name="AddJobButton" Content="Job hinzufügen" Click="AddJobButton_Click" Width="160" Height="45" Margin="10" Background="#2196F3" Foreground="White" FontSize="16"/>
+            <Button Name="StartJobsButton" Content="Jobs starten" Click="StartJobsButton_Click" Width="160" Height="45" Margin="10" Background="#FF9800" Foreground="White" FontSize="16"/>
+            <Button Name="StopCurrentJobButton" Content="Job stoppen" Click="StopCurrentJobButton_Click" Width="160" Height="45" Margin="10" Background="#F44336" Foreground="White" FontSize="16"/>
+            <Button Name="ContinueJobButton" Content="Job fortsetzen" Click="ContinueJobButton_Click" Width="160" Height="45" Margin="10" Background="#4CAF50" Foreground="White" FontSize="16"/>
+            <Button Name="GetJobStatusButton" Content="Jobstatus abfragen" Click="GetJobStatusButton_Click" Width="160" Height="45" Margin="10" Background="#9C27B0" Foreground="White" FontSize="16"/>
+
+            <Label Content="Jobstatus:" FontSize="18" FontWeight="Bold"  />
+            <Label Name="JobStatusLabel" Content="Jobstatus" FontSize="16" Margin="0,0,0,20" />
+
+            <Label Content="Jobs:" FontSize="18" FontWeight="Bold"  />
+            <ListBox Name="JobsListBox" Width="320" Height="100" Margin="10"/>
+        </StackPanel>
+    </Grid>
+</Window>
