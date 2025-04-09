@@ -5,7 +5,6 @@ using RestAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDbContext<ApiContext>(opt =>
     opt.UseInMemoryDatabase("MachineDb"));
 
@@ -16,7 +15,6 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-// Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -29,21 +27,19 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+        c.RoutePrefix = string.Empty; 
     });
 }
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
-// Use CORS policy
 app.UseCors("AllowAll");
 
 app.MapControllers();

@@ -1,0 +1,8 @@
+cd /mnt/c/Neu/FabrikVirtuell
+Container stoppen: docker-compose down
+Container starten: docker-compose up
+Container im Hintergrund starten: docker-compose up -d
+Container neu bauen und starten: docker-compose up --build
+Status der Container überprüfen: docker-compose ps
+
+-compose ui

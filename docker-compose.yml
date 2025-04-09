@@ -1,28 +1,26 @@
+version: '3.8'
+
 services:
   db:
-    image: postgres:latest
+    image: mysql:latest
     environment:
-      POSTGRES_USER: c
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: mydatabase
+      MYSQL_ROOT_PASSWORD: Calcio7ronaldo
+      MYSQL_DATABASE: mydatabase
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "3307:3306"
 
-  api:
-    image: my-api-image:latest
-    ports:
-      - "5000:5000"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - db
-
-  web:
-    image: my-web-app:latest
     ports:
       - "8000:8000"
-    depends_on:
-      - api
+    environment:
+      DATABASE_URL: mysql://root:Calcio7ronaldo@db:3306/mydatabase
 
 volumes:
   db-data:

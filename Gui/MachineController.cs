@@ -1,27 +1,29 @@
-﻿using System;
+﻿using Businesslogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 
-namespace Businesslogic
+namespace YourWpfAppNamespace
 {
     public class MachineController
     {
         private Machine _machine;
         private JobManager _jobManager;
         private MainWindow _mainWindow;
+        private DbConnection _dbConnection;
 
         public event Action<string> JobStatusChanged;
         public event Action<string> JobCompleted;
         public event Action<string> MachineFailed;
 
-        public MachineController(Machine machine, JobManager jobManager, MainWindow mainWindow)
+        public MachineController(Machine machine, JobManager jobManager, MainWindow mainWindow, DbConnection dbConnection)
         {
             _machine = machine;
             _jobManager = jobManager;
             _mainWindow = mainWindow;
+            _dbConnection = dbConnection;
 
             _jobManager.JobStatusChanged += UpdateJobStatus;
             _jobManager.JobCompleted += UpdateJobStatus;
@@ -41,9 +43,9 @@ namespace Businesslogic
 
         public async void StartJobs()
         {
-            if (_jobManager.GetJobs().Any())
+            if (_jobManager.GetPendingJobs().Any())
             {
-                var job = _jobManager.GetJobs().First();
+                var job = _jobManager.GetPendingJobs().First();
                 _mainWindow.JobStatusLabel.Content = $"Starte Job: {job.JobName}";
                 bool result = await _jobManager.StartJobsAsync(_machine);
                 if (!result)
@@ -60,6 +62,7 @@ namespace Businesslogic
                         if (_machine.FixError(errorCode))
                         {
                             MessageBox.Show("Fehler behoben! Füge deinen Job nochmals hinzu.");
+                            UpdateStatus();
                         }
                     }
                     else
@@ -69,7 +72,9 @@ namespace Businesslogic
                 }
                 else
                 {
+                    _dbConnection.MarkJobAsDone(job.JobId);
                     MessageBox.Show("Alle Produkte sind produziert.");
+                    UpdateStatus();
                 }
                 _mainWindow.JobStatusLabel.Content = "Keine Jobs in Bearbeitung";
             }
@@ -80,45 +85,51 @@ namespace Businesslogic
             _mainWindow.UpdateJobList();
         }
 
+        public void RemoveJob(Job job)
+        {
+            _jobManager.RemoveJob(job);
+            _mainWindow.UpdateJobList();
+        }
+
         public void StopCurrentJob()
         {
             _jobManager.StopCurrentJob();
-        }
-
-        public void ContinueJob()
-        {
-            _jobManager.ContinueJob(_machine);
+            UpdateStatus();
         }
 
         public void StartMachine()
         {
             _machine.Start();
             UpdateJobStatus("Maschine gestartet.");
+            UpdateStatus();
         }
 
         public void StopMachine()
         {
             _machine.Stop();
             UpdateJobStatus("Maschine gestoppt.");
+            UpdateStatus();
         }
 
         public void FailMachine()
         {
             _machine.Fail();
             UpdateJobStatus("Maschine im Error-Zustand.");
+            UpdateStatus();
         }
 
         public void FixMachineError(string code)
         {
             if (_machine.FixError(code))
             {
-                _jobManager.ContinueJob(_machine);
                 JobStatusChanged?.Invoke("Fehler behoben! Füge nochmals deinen Job hinzu.");
+                _mainWindow.UpdateStatus();
             }
             else
             {
                 JobStatusChanged?.Invoke("Falscher Code. Fehler nicht behoben.");
             }
+            UpdateStatus();
         }
 
         public string GetMachineStatus()
@@ -144,17 +155,35 @@ namespace Businesslogic
         public void AddJob(Job job)
         {
             _jobManager.AddJob(job);
+            _dbConnection.AddJob(job);
             UpdateJobStatus($"Job {job.JobName} hinzugefügt.");
+            _mainWindow.UpdateJobList();
         }
 
-        public void GetJobStatus()
+        public List<Job> GetPendingJobs()
         {
-            _jobManager.Status();
+            return _jobManager.GetPendingJobs();
         }
 
-        public List<Job> GetJobs()
+        private void UpdateStatus()
         {
-            return _jobManager.GetJobs();
+            _mainWindow.StatusLabel.Content = GetMachineStatus();
+            SignalLight.State signalLightState = GetSignalLightState();
+            switch (signalLightState)
+            {
+                case SignalLight.State.Green:
+                    _mainWindow.SignalLightEllipse.Fill = System.Windows.Media.Brushes.Green;
+                    break;
+                case SignalLight.State.Yellow:
+                    _mainWindow.SignalLightEllipse.Fill = System.Windows.Media.Brushes.Yellow;
+                    break;
+                case SignalLight.State.Red:
+                    _mainWindow.SignalLightEllipse.Fill = System.Windows.Media.Brushes.Red;
+                    break;
+                default:
+                    _mainWindow.SignalLightEllipse.Fill = System.Windows.Media.Brushes.Gray;
+                    break;
+            }
         }
     }
 }

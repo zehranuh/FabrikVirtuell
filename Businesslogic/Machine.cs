@@ -8,7 +8,13 @@ namespace Businesslogic
 {
     public class Machine
     {
-        private enum State { Ready, Running, Error }
+        private enum State
+        {
+            Ready,
+            Running,
+            Error
+        }
+
         private State currentState = State.Ready;
         private SignalLight signalLight = new SignalLight();
 
@@ -30,7 +36,7 @@ namespace Businesslogic
 
         public void Stop()
         {
-            if (currentState == State.Running || currentState == State.Ready)
+            if (currentState == State.Running || currentState == State.Error)
             {
                 currentState = State.Ready;
                 signalLight.SetState(SignalLight.State.Yellow);
@@ -52,7 +58,7 @@ namespace Businesslogic
             if (currentState == State.Error && code == "9944")
             {
                 currentState = State.Ready;
-                signalLight.SetState(SignalLight.State.Green);
+                signalLight.SetState(SignalLight.State.Yellow);
                 return true;
             }
             else
@@ -94,4 +100,5 @@ namespace Businesslogic
             return currentState.ToString();
         }
     }
+
 }

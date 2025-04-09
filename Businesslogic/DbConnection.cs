@@ -37,10 +37,15 @@ namespace Businesslogic
                 {
                     while (reader.Read())
                     {
-                        Job job = new Job( 
+                        Job.State state = (Job.State)Enum.Parse(typeof(Job.State), reader["CurrentState"].ToString());
+                        Job job = new Job(
+                            Convert.ToInt32(reader["JobId"]),
                             reader["JobName"].ToString(),
                             reader["Product"].ToString(),
-                            Convert.ToInt32(reader["Quantity"])
+                            Convert.ToInt32(reader["Quantity"]),
+                            Convert.ToInt32(reader["ProducedQuantity"]),
+                            state,
+                            Convert.ToInt32(reader["MachineID"])
                         );
                         jobs.Add(job);
                     }
@@ -49,21 +54,49 @@ namespace Businesslogic
             return jobs;
         }
 
+
         public void AddJob(Job job)
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "INSERT INTO Jobs (JobName, Product, Quantity, ProducedQuantity, CurrentState, MachineID) VALUES (@JobName, @Product, @Quantity, @ProducedQuantity, @CurrentState, @MachineID)";
+                string query = "INSERT INTO Jobs (JobName, Product, Quantity, ProducedQuantity, CurrentState, MachineID) " +
+                               "VALUES (@JobName, @Product, @Quantity, @ProducedQuantity, @CurrentState, @MachineID)";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@JobName", job.JobName);
                 cmd.Parameters.AddWithValue("@Product", job.Product);
                 cmd.Parameters.AddWithValue("@Quantity", job.Quantity);
-                cmd.Parameters.AddWithValue("@ProducedQuantity", 0);
-                cmd.Parameters.AddWithValue("@CurrentState", job.CurrentState.ToString());
-                cmd.Parameters.AddWithValue("@MachineID", 1); 
+                cmd.Parameters.AddWithValue("@ProducedQuantity", job.ProducedQuantity);
+                cmd.Parameters.AddWithValue("@CurrentState", job.CurrentState.ToString()); 
+                cmd.Parameters.AddWithValue("@MachineID", job.MachineID);
                 cmd.ExecuteNonQuery();
             }
         }
+
+
+        public void DeleteJob(int jobId)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM Jobs WHERE JobID = @JobID";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@JobID", jobId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void MarkJobAsDone(int jobId)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE Jobs SET CurrentState = 'Done' WHERE JobId = @JobId";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@JobId", jobId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
     }
 }
