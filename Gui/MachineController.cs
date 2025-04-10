@@ -41,11 +41,13 @@ namespace YourWpfAppNamespace
             MachineFailed?.Invoke(message);
         }
 
+
         public async void StartJobs()
         {
-            if (_jobManager.GetPendingJobs().Any())
+            var pendingJobs = _jobManager.GetPendingJobs();
+            if (pendingJobs.Any())
             {
-                var job = _jobManager.GetPendingJobs().First();
+                var job = pendingJobs.First();
                 _mainWindow.JobStatusLabel.Content = $"Starte Job: {job.JobName}";
                 bool result = await _jobManager.StartJobsAsync(_machine);
                 if (!result)
@@ -84,6 +86,7 @@ namespace YourWpfAppNamespace
             }
             _mainWindow.UpdateJobList();
         }
+
 
         public void RemoveJob(Job job)
         {

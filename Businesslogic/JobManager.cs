@@ -25,12 +25,13 @@ namespace Businesslogic
 
         private void LoadJobsFromDatabase()
         {
-            var jobs = _databaseHelper.GetJobs();
+            var jobs = _databaseHelper.GetJobs().Where(j => j.CurrentState == Job.State.Pending).ToList();
             foreach (var job in jobs)
             {
                 jobQueue.Enqueue(job);
             }
         }
+
 
         public void AddJob(Job job)
         {
@@ -38,6 +39,7 @@ namespace Businesslogic
             _databaseHelper.AddJob(job);
             JobStatusChanged?.Invoke($"Job {job.JobName} hinzugefügt.");
         }
+
 
         public async Task<bool> StartJobsAsync(Machine machine)
         {
@@ -83,12 +85,13 @@ namespace Businesslogic
                 currentJob.Complete();
                 machine.Stop();
                 JobCompleted?.Invoke($"Job abgeschlossen: {currentJob.Quantity} {currentJob.Product} produziert.");
-                _databaseHelper.MarkJobAsDone(currentJob.JobId); 
+                _databaseHelper.MarkJobAsDone(currentJob.JobId);
                 return true;
             }
 
             return false;
         }
+
 
         public void StopCurrentJob()
         {

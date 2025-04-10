@@ -40,13 +40,16 @@ namespace Businesslogic
             {
                 Jobs.Add(job);
             }
-            JobsLabel.Content = $"Anzahl der Jobs: {jobs.Count}";
+            JobsLabel.Content = $"Anzahl der Jobs: {Jobs.Count}";
         }
+
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             _machineController.StartMachine();
             UpdateStatus();
+            LoadJobsFromDatabase();
+            UpdateJobList();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -143,16 +146,19 @@ namespace Businesslogic
             UpdateJobList();
         }
 
+
         public void UpdateJobList()
         {
-            JobsListBox.Items.Clear();
-            var jobs = _machineController.GetPendingJobs();
+            Jobs.Clear();
+            var jobs = _machineController.GetPendingJobs().Where(j => j.CurrentState == Job.State.Pending).ToList();
             foreach (var job in jobs)
             {
-                JobsListBox.Items.Add($"{job.JobName}: {job.Quantity} {job.Product}");
+                Jobs.Add(job);
             }
-            JobsLabel.Content = $"Anzahl der Jobs: {jobs.Count}";
+            JobsLabel.Content = $"Anzahl der Jobs: {Jobs.Count}";
         }
+
+
 
         private void UpdateJobStatus(string status)
         {
