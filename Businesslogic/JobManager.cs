@@ -59,7 +59,7 @@ namespace Businesslogic
             Random random = new Random();
             bool jobCompleted = true;
 
-            for (int i = 1; i <= currentJob.Quantity; i++)
+            for (int i = currentJob.ProducedQuantity + 1; i <= currentJob.Quantity; i++)
             {
                 if (token.IsCancellationRequested)
                 {
@@ -76,6 +76,7 @@ namespace Businesslogic
                     break;
                 }
 
+                currentJob.ProducedQuantity = i;
                 JobStatusChanged?.Invoke($"Produziere {currentJob.Product}... ({i} von {currentJob.Quantity})");
                 await Task.Delay(2000);
             }
@@ -92,9 +93,13 @@ namespace Businesslogic
             return false;
         }
 
-
         public void StopCurrentJob()
         {
+            if (currentJob != null && currentJob.CurrentState == Job.State.InWork)
+            {
+                currentJob.Stop();
+                JobStatusChanged?.Invoke($"Job gestoppt: {currentJob.JobName}");
+            }
             _cancellationTokenSource?.Cancel();
         }
 

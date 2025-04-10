@@ -20,8 +20,6 @@ namespace Businesslogic
         public State CurrentState { get; set; }
         public int MachineID { get; set; }
 
-        private SignalLight signalLight = new SignalLight();
-
         public Job(int jobId, string jobName, string product, int quantity, int producedQuantity, State currentState, int machineID)
         {
             JobId = jobId;

@@ -87,7 +87,6 @@ namespace YourWpfAppNamespace
             _mainWindow.UpdateJobList();
         }
 
-
         public void RemoveJob(Job job)
         {
             _jobManager.RemoveJob(job);
@@ -158,7 +157,6 @@ namespace YourWpfAppNamespace
         public void AddJob(Job job)
         {
             _jobManager.AddJob(job);
-            _dbConnection.AddJob(job);
             UpdateJobStatus($"Job {job.JobName} hinzugefügt.");
             _mainWindow.UpdateJobList();
         }

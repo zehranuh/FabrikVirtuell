@@ -34,7 +34,7 @@ namespace Businesslogic
 
         private void LoadJobsFromDatabase()
         {
-            var jobs = _databaseHelper.GetJobs().Where(j => j.CurrentState == Job.State.Pending).ToList();
+            var jobs = _databaseHelper.GetJobs().Where(j => j.CurrentState != Job.State.Done).ToList();
             Jobs.Clear();
             foreach (var job in jobs)
             {
@@ -42,7 +42,6 @@ namespace Businesslogic
             }
             JobsLabel.Content = $"Anzahl der Jobs: {Jobs.Count}";
         }
-
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -57,6 +56,7 @@ namespace Businesslogic
             _machineController.StopMachine();
             UpdateStatus();
         }
+
 
         private void AddJobButton_Click(object sender, RoutedEventArgs e)
         {
@@ -109,7 +109,6 @@ namespace Businesslogic
             MessageBox.Show($"Job {jobName} hinzugefügt: {quantity} {product}");
             UpdateJobList();
         }
-
         private void StartJobsButton_Click(object sender, RoutedEventArgs e)
         {
             _machineController.StartJobs();
@@ -117,12 +116,12 @@ namespace Businesslogic
             LoadJobsFromDatabase();
             UpdateJobList();
         }
-
         private void StopCurrentJobButton_Click(object sender, RoutedEventArgs e)
         {
             _machineController.StopCurrentJob();
             UpdateStatus();
         }
+
 
         public void UpdateStatus()
         {
@@ -146,11 +145,10 @@ namespace Businesslogic
             UpdateJobList();
         }
 
-
         public void UpdateJobList()
         {
             Jobs.Clear();
-            var jobs = _machineController.GetPendingJobs().Where(j => j.CurrentState == Job.State.Pending).ToList();
+            var jobs = _machineController.GetPendingJobs().Where(j => j.CurrentState != Job.State.Done).ToList();
             foreach (var job in jobs)
             {
                 Jobs.Add(job);
@@ -158,13 +156,10 @@ namespace Businesslogic
             JobsLabel.Content = $"Anzahl der Jobs: {Jobs.Count}";
         }
 
-
-
         private void UpdateJobStatus(string status)
         {
             Dispatcher.Invoke(() => JobStatusLabel.Content = status);
         }
-
         private void DeleteJobButton_Click(object sender, RoutedEventArgs e)
         {
             if (JobsListBox.SelectedItem != null)
@@ -186,7 +181,6 @@ namespace Businesslogic
                 MessageBox.Show("Bitte wählen Sie einen Job aus der Liste aus.");
             }
         }
-
         private void ShowErrorMessage(string message)
         {
             Dispatcher.Invoke(() =>
@@ -196,6 +190,7 @@ namespace Businesslogic
                 StatusLabel.Content = "Error";
             });
         }
+
 
         private void FixMachineErrorButton_Click(object sender, RoutedEventArgs e)
         {
