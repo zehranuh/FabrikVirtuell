@@ -29,17 +29,16 @@ namespace Businesslogic
 
             SignalLightEllipse.Fill = Brushes.Yellow;
             StatusLabel.Content = "Ready";
-            Jobs.Add(new Job("test", "product", 10));
             LoadJobsFromDatabase();
         }
 
         private void LoadJobsFromDatabase()
         {
-            var jobs = _databaseHelper.GetJobs();
-            JobsListBox.Items.Clear();
+            var jobs = _databaseHelper.GetJobs().Where(j => j.CurrentState == Job.State.Pending).ToList();
+            Jobs.Clear();
             foreach (var job in jobs)
             {
-                JobsListBox.Items.Add($"{job.JobName}: {job.Quantity} {job.Product}");
+                Jobs.Add(job);
             }
             JobsLabel.Content = $"Anzahl der Jobs: {jobs.Count}";
         }
